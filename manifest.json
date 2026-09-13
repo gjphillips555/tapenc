@@ -1,0 +1,9 @@
+{
+  "name": "TapEnc",
+  "short_name": "TapEnc",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
+  "description": "Encrypt a short message and pass it by NFC tag, QR, or file."
+}
