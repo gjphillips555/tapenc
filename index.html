@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1220" />
+  <meta name="description" content="TapEnc — encrypt a short message or task list and pass it by NFC tag, QR, or file. Everything stays on the device." />
+  <title>TapEnc — encrypted tap share</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="wrap">
+    <header>
+      <div>
+        <h1>TapEnc</h1>
+        <div class="sub">Encrypt today’s tasks on this phone. Pass them by NFC tag, QR, or a tiny file. Nothing is uploaded.</div>
+      </div>
+      <span class="badge">offline crypto</span>
+    </header>
+
+    <div class="tabs">
+      <button id="tabSend" class="on" type="button">Send</button>
+      <button id="tabRecv" type="button">Receive</button>
+    </div>
+
+    <section id="sendPane">
+      <div class="card">
+        <label for="msg">Message / today’s tasks</label>
+        <textarea id="msg" placeholder="• Buy milk&#10;• Fix the gate latch&#10;• 7pm at the park"></textarea>
+        <div class="limits" id="sizeHint">0 characters · keep it short if you want NFC or QR</div>
+      </div>
+
+      <div class="card">
+        <label for="pass">Shared passphrase</label>
+        <div class="row">
+          <input id="pass" type="password" autocomplete="off" placeholder="something only your mates know" />
+          <button class="ghost" id="togglePass" type="button">Show</button>
+        </div>
+        <label for="pass2" style="margin-top:10px">Confirm passphrase</label>
+        <input id="pass2" type="password" autocomplete="off" />
+        <div class="hint">Same passphrase on both phones. Don’t put the password on the tag or in the QR — only the ciphertext travels.</div>
+        <label style="margin-top:10px"><input type="checkbox" id="remember" /> Remember passphrase on this device</label>
+      </div>
+
+      <div class="card">
+        <div class="pillrow">
+          <span class="pill">AES-256-GCM</span>
+          <span class="pill">PBKDF2 210k</span>
+          <span class="pill">no server</span>
+        </div>
+        <div class="btns">
+          <button class="act" id="btnEncrypt" type="button">Encrypt</button>
+          <button class="ghost" id="btnQr" type="button" disabled>Show QR</button>
+          <button class="ghost" id="btnCopy" type="button" disabled>Copy payload</button>
+          <button class="ghost" id="btnFile" type="button" disabled>Download file</button>
+          <button class="ghost" id="btnNfcWrite" type="button" disabled>Write NFC tag</button>
+        </div>
+        <div class="status" id="sendStatus"></div>
+        <pre class="out" id="payloadOut" hidden></pre>
+        <div id="qrbox"></div>
+        <details>
+          <summary>How the tap actually works</summary>
+          <p>Phones cannot reliably push a custom encrypted file to each other over raw NFC anymore. Android Beam is gone, and iPhone apps are not allowed to do general phone-to-phone NFC data dump.</p>
+          <p><strong>What works today:</strong> write the encrypted blob to a cheap NFC sticker (in a case, keyring, or wallet). Mate taps the sticker. Or flash the QR. Or hand them the tiny <code>.tapenc</code> file via AirDrop / Quick Share after the tap handshake those systems already provide.</p>
+          <p>Web NFC write/read works in Chrome on Android only, and only against tags — not against another phone acting as a tag.</p>
+        </details>
+      </div>
+    </section>
+
+    <section id="recvPane" hidden>
+      <div class="card">
+        <label for="rpass">Shared passphrase</label>
+        <div class="row">
+          <input id="rpass" type="password" autocomplete="off" placeholder="same passphrase the sender used" />
+          <button class="ghost" id="rtogglePass" type="button">Show</button>
+        </div>
+      </div>
+      <div class="card">
+        <label for="rin">Encrypted payload</label>
+        <textarea id="rin" placeholder="Paste TAPENC1.... here, or use the buttons below"></textarea>
+        <div class="btns">
+          <button class="act" id="btnDecrypt" type="button">Decrypt</button>
+          <button class="ghost" id="btnNfcRead" type="button">Read NFC tag</button>
+          <label class="ghost" style="display:inline-block">Open file<input id="fileIn" type="file" accept=".tapenc,.txt,text/plain" hidden /></label>
+        </div>
+        <div class="status" id="recvStatus"></div>
+        <div class="okbox" id="plainOut" hidden></div>
+      </div>
+    </section>
+
+    <footer>
+      Crypto runs only in this browser. If you lose the passphrase, the payload is gone for good. NFC tag capacity is usually 137–888 bytes usable — long task lists belong in a file or QR-alternative share (AirDrop / Quick Share), not on the chip.
+    </footer>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
